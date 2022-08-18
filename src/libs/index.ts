@@ -1,0 +1,1 @@
+export { phoneRegExp } from './operator';

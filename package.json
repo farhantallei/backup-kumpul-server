@@ -1,0 +1,26 @@
+{
+  "name": "kumpul-server",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/main.js\"",
+    "build": "npx tsc",
+    "preview": "node dist/main.js",
+    "database": "npx prisma studio",
+    "migrate": "npx prisma migrate dev"
+  },
+  "dependencies": {
+    "@fastify/sensible": "^5.1.0",
+    "@prisma/client": "^4.2.1",
+    "fastify": "^4.4.0",
+    "fastify-zod": "^1.1.0",
+    "zod": "^3.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.6",
+    "concurrently": "^7.3.0",
+    "nodemon": "^2.0.19",
+    "prisma": "^4.2.1",
+    "typescript": "^4.7.4"
+  }
+}
