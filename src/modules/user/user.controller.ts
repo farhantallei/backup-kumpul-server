@@ -1,8 +1,8 @@
 import { RouteHandlerTypebox } from '../../types';
-import { LoginSchema, RegisterSchema } from './user.schema';
+import { LoginTSchema, RegisterTSchema } from './user.schema';
 import { createUser, getUser } from './user.service';
 
-export const RegisterHandler: RouteHandlerTypebox<RegisterSchema> = async (
+export const RegisterHandler: RouteHandlerTypebox<RegisterTSchema> = async (
   request,
   reply
 ) => {
@@ -19,7 +19,7 @@ export const RegisterHandler: RouteHandlerTypebox<RegisterSchema> = async (
   return reply.code(201).send({ id });
 };
 
-export const LoginHandler: RouteHandlerTypebox<LoginSchema> = async (
+export const LoginHandler: RouteHandlerTypebox<LoginTSchema> = async (
   request,
   reply
 ) => {

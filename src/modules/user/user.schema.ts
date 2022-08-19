@@ -11,6 +11,8 @@ export const RegisterSchema = {
   },
 };
 
+export type RegisterTSchema = typeof RegisterSchema;
+
 export const LoginSchema = {
   body: Type.Object({
     phoneNumber: UserSchema.phoneNumber,
@@ -20,5 +22,4 @@ export const LoginSchema = {
   },
 };
 
-export type RegisterSchema = typeof RegisterSchema;
-export type LoginSchema = typeof LoginSchema;
+export type LoginTSchema = typeof LoginSchema;
