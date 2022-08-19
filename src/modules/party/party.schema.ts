@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox';
+import { Static, Type } from '@sinclair/typebox';
 import { CandidateSchema, PartySchema, UserSchema } from '../../schemas';
 
 export const CreatePartySchema = {
@@ -9,7 +9,13 @@ export const CreatePartySchema = {
     memberLimit: PartySchema.memberLimit,
     pollChoice: PartySchema.pollChoice,
     pollEndsAt: PartySchema.pollEndsAt,
-    candidates: Type.Array(Type.Object(CandidateSchema)),
+    candidates: Type.Array(
+      Type.Object({
+        phoneNumber: CandidateSchema.phoneNumber,
+        name: CandidateSchema.name,
+        admin: CandidateSchema.admin,
+      })
+    ),
   }),
   response: {
     201: Type.Object({
@@ -21,4 +27,6 @@ export const CreatePartySchema = {
   },
 };
 
-export type CreatePartySchema = typeof CreatePartySchema;
+export type CreatePartyTSchema = typeof CreatePartySchema;
+export type CreatePartyBody = Static<typeof CreatePartySchema.body>;
+export type CreatePartyReply = Static<typeof CreatePartySchema.response[201]>;

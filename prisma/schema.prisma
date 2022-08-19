@@ -19,7 +19,7 @@ model Party {
   name        String
   private     Boolean
   memberLimit Int                @db.SmallInt
-  pollChoice  DateTime[]
+  pollChoice  DateTime[]         @db.Date
   pollEndsAt  DateTime?
   createdAt   DateTime           @default(now())
   candidates  Candidate[]
@@ -29,7 +29,7 @@ model Party {
 model Candidate {
   party       Party   @relation(fields: [partyId], references: [id], onDelete: Cascade)
   partyId     String
-  phoneNumber String  @unique
+  phoneNumber String
   name        String
   admin       Boolean
 

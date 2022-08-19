@@ -1,48 +1,58 @@
 import { RouteHandlerTypebox } from '../../types';
-import { CreatePartySchema } from './party.schema';
+import { getDate } from '../../utils/date';
+import { CreatePartyTSchema } from './party.schema';
+import { createParty, getAdminAccounts, getHostId } from './party.service';
 
 export const CreatePartyHandler: RouteHandlerTypebox<
-  CreatePartySchema
+  CreatePartyTSchema
 > = async (request, reply) => {
-  const { memberLimit, candidates, ...others } = request.body;
+  const { hostId, memberLimit, candidates, ...others } = request.body;
 
-  if (others.pollEndsAt)
-    console.log(new Date(others.pollEndsAt).toLocaleString());
+  if (others.pollEndsAt) {
+    if (new Date(others.pollEndsAt).getTime() <= new Date().getTime())
+      return reply.badRequest(`body/pollEndsAt must be > ${new Date()}`);
+  }
 
-  // const admins = [...candidates.filter((candidate) => candidate.admin)];
-  // const nonAdmins = [...candidates.filter((candidate) => !candidate.admin)];
+  for (const date in others.pollChoice) {
+    if (
+      new Date(getDate(others.pollChoice[date])).getTime() <=
+      new Date(getDate()).getTime()
+    )
+      return reply.badRequest(
+        `body/pollChoice/${date} must be > ${new Date().toLocaleDateString()}`
+      );
+  }
 
-  // const adminsPhoneNumber = admins.map((admin) => admin.phoneNumber);
+  const currHostId = await getHostId(reply, { hostId });
 
-  // const adminsHaveAccount = await commitToDB(
-  //   prisma.user.findMany({
-  //     where: { phoneNumber: { in: adminsPhoneNumber } },
-  //   })
-  // );
+  const admins = [...candidates.filter((candidate) => candidate.admin)];
+  const nonAdmins = [...candidates.filter((candidate) => !candidate.admin)];
 
-  // const adminsDontHaveAccount = admins.filter((admin) =>
-  //   adminsPhoneNumber.includes(admin.phoneNumber)
-  // );
+  const adminPhoneNumbers = admins.map((admin) => admin.phoneNumber);
 
-  // const memberIds = [...adminsHaveAccount.map((admin) => admin.id)];
+  const adminAccounts = await getAdminAccounts(reply, { adminPhoneNumbers });
 
-  // const candidatesFiltered = [...nonAdmins, ...adminsDontHaveAccount];
+  const adminAccountPhoneNumbers = adminAccounts.map(
+    (admin) => admin.phoneNumber
+  );
 
-  // const {
-  //   candidates: adminCandidates,
-  //   members: adminMembers,
-  //   ...newParty
-  // } = await createParty({
-  //   memberLimit: memberLimit || candidates.length - adminsHaveAccount.length,
-  //   candidates: candidatesFiltered,
-  //   memberIds,
-  //   ...others,
-  // });
+  const adminAnonymouses = [
+    ...admins.filter(
+      (admin) => !adminAccountPhoneNumbers.includes(admin.phoneNumber)
+    ),
+  ];
 
-  // const newAdmins = [
-  //   ...adminCandidates.map((admin) => admin.name),
-  //   ...adminMembers.map((admin) => admin.member.name),
-  // ];
+  const memberIds = [...adminAccounts.map((admin) => admin.id)];
 
-  // return reply.code(201).send({ ...newParty, admins: newAdmins });
+  const candidatesFiltered = [...nonAdmins, ...adminAnonymouses];
+
+  const newParty = await createParty(reply, {
+    hostId: currHostId,
+    memberLimit: memberLimit || candidates.length + 1,
+    candidates: candidatesFiltered,
+    memberIds,
+    ...others,
+  });
+
+  return reply.code(201).send(newParty);
 };
