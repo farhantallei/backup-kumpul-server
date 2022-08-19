@@ -1,11 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { phoneRegExp } from '../../libs';
-
-const UserSchema = {
-  id: Type.RegEx(/^c[^\s-]{8,}$/),
-  name: Type.String({ minLength: 3 }),
-  phoneNumber: Type.RegEx(phoneRegExp()),
-};
+import { UserSchema } from '../../schemas';
 
 export const RegisterSchema = {
   body: Type.Object({
