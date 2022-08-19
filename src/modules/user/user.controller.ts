@@ -8,13 +8,13 @@ export const RegisterHandler: RouteHandlerTypebox<RegisterSchema> = async (
 ) => {
   const { name, phoneNumber } = request.body;
 
-  const user = await getUser(phoneNumber);
+  const user = await getUser(reply, { phoneNumber });
 
   if (user) return reply.badRequest('Phone number is already taken');
 
   // TODO: Implementing phone number verification
 
-  const { id } = await createUser({ name, phoneNumber });
+  const { id } = await createUser(reply, { name, phoneNumber });
 
   return reply.code(201).send({ id });
 };
@@ -25,7 +25,7 @@ export const LoginHandler: RouteHandlerTypebox<LoginSchema> = async (
 ) => {
   const { phoneNumber } = request.body;
 
-  const user = await getUser(phoneNumber);
+  const user = await getUser(reply, { phoneNumber });
 
   if (user == null) return reply.badRequest('Phone number is not found');
 

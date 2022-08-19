@@ -9,10 +9,6 @@ export function addPlugins() {
   app.register(fastifySensible);
 }
 
-export function addDecorates() {
-  app.decorate('error', undefined);
-}
-
 export function addRoutes() {
   app.register(
     async (route) => {

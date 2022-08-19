@@ -1,7 +1,6 @@
-import app, { addDecorates, addPlugins, addRoutes } from './app';
+import app, { addPlugins, addRoutes } from './app';
 
 addPlugins();
-addDecorates();
 addRoutes();
 
 app.listen({ port: 5000 }, (err, address) => {

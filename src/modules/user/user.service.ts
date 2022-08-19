@@ -1,16 +1,29 @@
+import { FastifyReply } from 'fastify';
 import prisma from '../../prisma';
 import { commitToDB } from '../../utils';
 
-export async function getUser(phoneNumber: string) {
-  return await commitToDB(prisma.user.findUnique({ where: { phoneNumber } }));
+export async function getUser(
+  reply: FastifyReply,
+  { phoneNumber }: { phoneNumber: string }
+) {
+  return await commitToDB(
+    prisma.user.findUnique({ where: { phoneNumber } }),
+    reply
+  );
 }
 
-export async function createUser({
-  name,
-  phoneNumber,
-}: {
-  name: string;
-  phoneNumber: string;
-}) {
-  return await commitToDB(prisma.user.create({ data: { name, phoneNumber } }));
+export async function createUser(
+  reply: FastifyReply,
+  {
+    name,
+    phoneNumber,
+  }: {
+    name: string;
+    phoneNumber: string;
+  }
+) {
+  return await commitToDB(
+    prisma.user.create({ data: { name, phoneNumber } }),
+    reply
+  );
 }
