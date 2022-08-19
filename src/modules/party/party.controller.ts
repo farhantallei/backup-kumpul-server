@@ -1,15 +1,13 @@
-import prisma from '../../prisma';
-import { commitToDB } from '../../utils';
-import { CreatePartyHandler } from './party.options';
+import { RouteHandlerTypebox } from '../../types';
 import { CreatePartySchema } from './party.schema';
 
-export const createPartyHandler: CreatePartyHandler = async (
-  request,
-  reply
-) => {
+export const CreatePartyHandler: RouteHandlerTypebox<
+  CreatePartySchema
+> = async (request, reply) => {
   const { memberLimit, candidates, ...others } = request.body;
 
-  console.log(typeof others.pollEndsAt);
+  if (others.pollEndsAt)
+    console.log(new Date(others.pollEndsAt).toLocaleString());
 
   // const admins = [...candidates.filter((candidate) => candidate.admin)];
   // const nonAdmins = [...candidates.filter((candidate) => !candidate.admin)];
@@ -48,56 +46,3 @@ export const createPartyHandler: CreatePartyHandler = async (
 
   // return reply.code(201).send({ ...newParty, admins: newAdmins });
 };
-
-async function createParty({
-  hostId,
-  candidates,
-  memberIds,
-  ...party
-}: CreatePartySchema & {
-  memberLimit: number;
-  memberIds: string[];
-}) {
-  return await commitToDB(
-    prisma.party.create({
-      data: {
-        ...party,
-        candidates: {
-          createMany: {
-            data: candidates,
-          },
-        },
-        members: {
-          create: [
-            ...memberIds.map((memberId) => ({
-              memberId,
-              admin: true,
-            })),
-          ],
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        candidates: {
-          where: {
-            admin: true,
-          },
-          select: {
-            name: true,
-          },
-        },
-        members: {
-          select: {
-            member: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-        createdAt: true,
-      },
-    })
-  );
-}

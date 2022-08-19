@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@fastify/sensible": "^5.1.0",
+    "@fastify/type-provider-typebox": "^2.3.0",
     "@prisma/client": "^4.2.1",
-    "fastify": "^4.4.0",
-    "fastify-zod": "^1.1.0",
-    "zod": "^3.18.0"
+    "@sinclair/typebox": "^0.24.28",
+    "fastify": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.6",

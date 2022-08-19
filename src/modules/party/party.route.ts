@@ -1,9 +1,13 @@
-import { FastifyPluginAsync } from 'fastify';
-import { createPartyOpts } from './party.options';
+import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
+import { CreatePartyHandler } from './party.controller';
+import { CreatePartySchema } from './party.schema';
 
-const partyRoutes: FastifyPluginAsync = async (route) => {
+const partyRoutes: FastifyPluginAsyncTypebox = async (route) => {
   route.get('/', () => 'join party');
-  route.post('/', createPartyOpts);
+  route.post('/', {
+    schema: CreatePartySchema,
+    handler: CreatePartyHandler,
+  });
 };
 
 export default partyRoutes;

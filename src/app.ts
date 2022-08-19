@@ -1,9 +1,9 @@
 import fastifySensible from '@fastify/sensible';
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import fastify from 'fastify';
 import { partyRoutes, userRoutes } from './modules/routes';
-import { partySchemas, userSchemas } from './modules/schemas';
 
-const app = fastify();
+const app = fastify().withTypeProvider<TypeBoxTypeProvider>();
 
 export function addPlugins() {
   app.register(fastifySensible);
@@ -14,9 +14,6 @@ export function addDecorates() {
 }
 
 export function addRoutes() {
-  for (const schema of [...userSchemas, ...partySchemas]) {
-    app.addSchema(schema);
-  }
   app.register(
     async (route) => {
       route.register(userRoutes, { prefix: 'accounts' });

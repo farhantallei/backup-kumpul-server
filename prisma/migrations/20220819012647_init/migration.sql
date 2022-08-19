@@ -14,7 +14,7 @@ CREATE TABLE "Party" (
     "private" BOOLEAN NOT NULL,
     "memberLimit" SMALLINT NOT NULL,
     "pollChoice" TIMESTAMP(3)[],
-    "pollEndsAt" TIMESTAMP(3) NOT NULL,
+    "pollEndsAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Party_pkey" PRIMARY KEY ("id")

@@ -1,9 +1,11 @@
-import prisma from '../../prisma';
-import { commitToDB } from '../../utils';
-import { LoginHandler, RegisterHandler } from './user.options';
-import { RegisterSchema } from './user.schema';
+import { RouteHandlerTypebox } from '../../types';
+import { LoginSchema, RegisterSchema } from './user.schema';
+import { createUser, getUser } from './user.service';
 
-export const registerHandler: RegisterHandler = async (request, reply) => {
+export const RegisterHandler: RouteHandlerTypebox<RegisterSchema> = async (
+  request,
+  reply
+) => {
   const { name, phoneNumber } = request.body;
 
   const user = await getUser(phoneNumber);
@@ -17,7 +19,10 @@ export const registerHandler: RegisterHandler = async (request, reply) => {
   return reply.code(201).send({ id });
 };
 
-export const loginHandler: LoginHandler = async (request, reply) => {
+export const LoginHandler: RouteHandlerTypebox<LoginSchema> = async (
+  request,
+  reply
+) => {
   const { phoneNumber } = request.body;
 
   const user = await getUser(phoneNumber);
@@ -28,11 +33,3 @@ export const loginHandler: LoginHandler = async (request, reply) => {
 
   return { id: user.id };
 };
-
-async function getUser(phoneNumber: string) {
-  return await commitToDB(prisma.user.findUnique({ where: { phoneNumber } }));
-}
-
-async function createUser({ name, phoneNumber }: RegisterSchema) {
-  return await commitToDB(prisma.user.create({ data: { name, phoneNumber } }));
-}

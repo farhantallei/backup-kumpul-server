@@ -1,16 +1,33 @@
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import type {
+  ContextConfigDefault,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
   RouteShorthandOptionsWithHandler,
 } from 'fastify';
-import type { RouteGenericInterface } from 'fastify/types/route';
+import type {
+  RouteGenericInterface,
+  RouteHandlerMethod,
+} from 'fastify/types/route';
 
-export type RSOWH<
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface
-> = RouteShorthandOptionsWithHandler<
+export type RouteShorthandOptionsWithHandlerTypebox<TSchema> =
+  RouteShorthandOptionsWithHandler<
+    RawServerDefault,
+    RawRequestDefaultExpression<RawServerDefault>,
+    RawReplyDefaultExpression<RawServerDefault>,
+    RouteGenericInterface,
+    ContextConfigDefault,
+    TSchema,
+    TypeBoxTypeProvider
+  >;
+
+export type RouteHandlerTypebox<TSchema> = RouteHandlerMethod<
   RawServerDefault,
   RawRequestDefaultExpression<RawServerDefault>,
   RawReplyDefaultExpression<RawServerDefault>,
-  RouteGeneric
+  RouteGenericInterface,
+  ContextConfigDefault,
+  TSchema,
+  TypeBoxTypeProvider
 >;

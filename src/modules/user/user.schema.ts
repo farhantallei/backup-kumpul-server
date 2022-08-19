@@ -1,33 +1,30 @@
-import { buildJsonSchemas } from 'fastify-zod';
-import { z } from 'zod';
+import { Type } from '@sinclair/typebox';
 import { phoneRegExp } from '../../libs';
 
-const id = z.string().cuid();
-const name = z.string().min(3);
-const phoneNumber = z.string().regex(phoneRegExp());
+const UserSchema = {
+  id: Type.RegEx(/^c[^\s-]{8,}$/),
+  name: Type.String({ minLength: 3 }),
+  phoneNumber: Type.RegEx(phoneRegExp()),
+};
 
-const registerSchema = z.object({ name, phoneNumber });
-const loginSchema = z.object({ phoneNumber });
-const replySchema = z.object({ id });
+export const RegisterSchema = {
+  body: Type.Object({
+    name: UserSchema.name,
+    phoneNumber: UserSchema.phoneNumber,
+  }),
+  response: {
+    201: Type.Object({ id: UserSchema.id }),
+  },
+};
 
-const { schemas: userSchemas, $ref } = buildJsonSchemas(
-  { registerSchema, loginSchema, replySchema },
-  { $id: 'user' }
-);
+export const LoginSchema = {
+  body: Type.Object({
+    phoneNumber: UserSchema.phoneNumber,
+  }),
+  response: {
+    200: Type.Object({ id: UserSchema.id }),
+  },
+};
 
-export { $ref };
-
-export type RegisterSchema = z.infer<typeof registerSchema>;
-export type LoginSchema = z.infer<typeof loginSchema>;
-
-export interface RegisterRoute {
-  Body: RegisterSchema;
-  Reply: z.infer<typeof replySchema>;
-}
-
-export interface LoginRoute {
-  Body: LoginSchema;
-  Reply: z.infer<typeof replySchema>;
-}
-
-export default userSchemas;
+export type RegisterSchema = typeof RegisterSchema;
+export type LoginSchema = typeof LoginSchema;

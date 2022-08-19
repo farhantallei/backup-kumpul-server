@@ -20,7 +20,7 @@ model Party {
   private     Boolean
   memberLimit Int                @db.SmallInt
   pollChoice  DateTime[]
-  pollEndsAt  DateTime
+  pollEndsAt  DateTime?
   createdAt   DateTime           @default(now())
   candidates  Candidate[]
   members     MembersOnParties[]

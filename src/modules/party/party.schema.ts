@@ -1,59 +1,43 @@
-import { buildJsonSchemas } from 'fastify-zod';
-import { z } from 'zod';
+import { Type } from '@sinclair/typebox';
 import { phoneRegExp } from '../../libs';
 
-const dateSchema = z.preprocess((arg) => {
-  if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
-}, z.date().min(new Date()));
-
-const partyModel = {
-  id: z.string().cuid(),
-  hostId: z.string().cuid(),
-  name: z.string().min(3),
-  private: z.boolean(),
-  memberLimit: z.optional(z.number()),
-  pollChoice: z.array(dateSchema).min(1),
-  pollEndsAt: dateSchema,
-  createdAt: z.date(),
+const PartySchema = {
+  id: Type.Readonly(Type.RegEx(/^c[^\s-]{8,}$/)),
+  hostId: Type.RegEx(/^c[^\s-]{8,}$/),
+  name: Type.String({ minLength: 3 }),
+  private: Type.Boolean(),
+  memberLimit: Type.Optional(Type.Number({ minimum: 1 })),
+  pollChoice: Type.Array(Type.String({ format: 'date' }), {
+    uniqueItems: true,
+  }),
+  pollEndsAt: Type.Optional(Type.String({ format: 'date-time' })),
+  createdAt: Type.Readonly(Type.String({ format: 'date-time' })),
 };
 
-const candidateModel = {
-  phoneNumber: z.string().regex(phoneRegExp()),
-  name: z.string().min(3),
-  admin: z.boolean(),
+const CandidateSchema = {
+  phoneNumber: Type.RegEx(phoneRegExp()),
+  name: Type.String({ minLength: 3 }),
+  admin: Type.Boolean(),
 };
 
-const candidates = z.array(z.object(candidateModel));
+export const CreatePartySchema = {
+  body: Type.Object({
+    hostId: PartySchema.hostId,
+    name: PartySchema.name,
+    private: PartySchema.private,
+    memberLimit: PartySchema.memberLimit,
+    pollChoice: PartySchema.pollChoice,
+    pollEndsAt: PartySchema.pollEndsAt,
+    candidates: Type.Array(Type.Object(CandidateSchema)),
+  }),
+  response: {
+    201: Type.Object({
+      id: PartySchema.id,
+      name: PartySchema.name,
+      admins: Type.Array(CandidateSchema.name),
+      createdAt: PartySchema.createdAt,
+    }),
+  },
+};
 
-const createPartySchema = z.object({
-  hostId: partyModel.hostId,
-  name: partyModel.name,
-  private: partyModel.private,
-  memberLimit: partyModel.memberLimit,
-  pollChoice: partyModel.pollChoice,
-  pollEndsAt: partyModel.pollEndsAt,
-  candidates,
-});
-// const joinPartySchema = z.object({ phoneNumber });
-const replySchema = z.object({
-  id: partyModel.id,
-  name: partyModel.name,
-  admins: z.array(candidateModel.name),
-  createdAt: partyModel.createdAt,
-});
-
-const { schemas: partySchemas, $ref } = buildJsonSchemas(
-  { createPartySchema, replySchema },
-  { $id: 'party' }
-);
-
-export { $ref };
-
-export type CreatePartySchema = z.infer<typeof createPartySchema>;
-
-export interface CreatePartyRoute {
-  Body: CreatePartySchema;
-  Reply: z.infer<typeof replySchema>;
-}
-
-export default partySchemas;
+export type CreatePartySchema = typeof CreatePartySchema;

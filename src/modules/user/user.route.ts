@@ -1,9 +1,16 @@
-import { FastifyPluginAsync } from 'fastify';
-import { loginOpts, registerOpts } from './user.options';
+import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
+import { LoginHandler, RegisterHandler } from './user.controller';
+import { LoginSchema, RegisterSchema } from './user.schema';
 
-const userRoutes: FastifyPluginAsync = async (route) => {
-  route.post('/register', registerOpts);
-  route.post('/login', loginOpts);
+const userRoutes: FastifyPluginAsyncTypebox = async (route) => {
+  route.post('/register', {
+    schema: RegisterSchema,
+    handler: RegisterHandler,
+  });
+  route.post('/login', {
+    schema: LoginSchema,
+    handler: LoginHandler,
+  });
 };
 
 export default userRoutes;
