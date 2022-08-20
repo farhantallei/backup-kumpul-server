@@ -90,7 +90,7 @@ const operator: Operator = {
       max: 12,
     },
     axis: {
-      prefix: /3[1-3,8]/,
+      prefix: /3[1-3]|38/,
       min: 10,
       max: 12,
     },
@@ -138,9 +138,8 @@ export function phoneRegExp() {
       for (const card in operator[provider])
         if (operator[provider].hasOwnProperty(card)) {
           const { prefix, min, max } = operator[provider][card];
-          prefixList.push(
-            `(${`${prefix}`.split('/')[1]})(\\d{${min - 4},${max - 4}})`
-          );
+          const prefixStr = `${prefix}`.split('/')[1];
+          prefixList.push(`(${prefixStr})(\\d{${min - 4},${max - 4}})`);
         }
   }
 
