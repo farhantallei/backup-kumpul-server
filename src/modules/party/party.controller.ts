@@ -58,14 +58,16 @@ export const CreatePartyHandler: RouteHandlerTypebox<
 
   const candidatesFiltered = [...nonAdmins, ...adminAnonymouses];
 
-  const newParty = await createParty(reply, {
+  const { createdAt, ...newParty } = await createParty(reply, {
     hostId: host.id,
     candidates: candidatesFiltered,
     memberIds,
     ...others,
   });
 
-  return reply.code(201).send(newParty);
+  return reply
+    .code(201)
+    .send({ ...newParty, createdAt: createdAt.toISOString() });
 };
 
 export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
@@ -114,7 +116,12 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
         userId,
         admin: true,
       });
-      return { partyId, memberId: userId, admin: true, assignedAt };
+      return {
+        partyId,
+        memberId: userId,
+        admin: true,
+        assignedAt: assignedAt.toISOString(),
+      };
     }
     await deleteCandidate(reply, { partyId, phoneNumber: user.phoneNumber });
     const { assignedAt } = await joinParty(reply, {
@@ -122,7 +129,12 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
       userId,
       admin: false,
     });
-    return { partyId, memberId: userId, admin: false, assignedAt };
+    return {
+      partyId,
+      memberId: userId,
+      admin: false,
+      assignedAt: assignedAt.toISOString(),
+    };
   }
 
   // If party is not private
@@ -138,7 +150,12 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
       userId,
       admin: false,
     });
-    return { partyId, memberId: userId, admin: false, assignedAt };
+    return {
+      partyId,
+      memberId: userId,
+      admin: false,
+      assignedAt: assignedAt.toISOString(),
+    };
   }
   // 3. If the user is exists, check if the user is admin or not???
   if (candidate.admin) {
@@ -148,7 +165,12 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
       userId,
       admin: true,
     });
-    return { partyId, memberId: userId, admin: true, assignedAt };
+    return {
+      partyId,
+      memberId: userId,
+      admin: true,
+      assignedAt: assignedAt.toISOString(),
+    };
   }
   await deleteCandidate(reply, { partyId, phoneNumber: user.phoneNumber });
   const { assignedAt } = await joinParty(reply, {
@@ -156,5 +178,10 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
     userId,
     admin: false,
   });
-  return { partyId, memberId: userId, admin: false, assignedAt };
+  return {
+    partyId,
+    memberId: userId,
+    admin: false,
+    assignedAt: assignedAt.toISOString(),
+  };
 };

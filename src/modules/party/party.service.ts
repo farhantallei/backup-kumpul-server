@@ -1,12 +1,6 @@
 import { FastifyReply } from 'fastify';
 import prisma from '../../prisma';
 import { commitToDB } from '../../utils';
-import {
-  CreatePartyBody,
-  CreatePartyReply,
-  JoinPartyBody,
-  JoinPartyReply,
-} from './party.schema';
 
 export async function getUser(
   reply: FastifyReply,
@@ -65,11 +59,21 @@ export async function createParty(
     memberIds,
     pollChoice,
     ...party
-  }: CreatePartyBody & {
+  }: {
+    hostId: string;
+    name: string;
+    private: boolean;
+    pollChoice: string[];
+    pollEndsAt?: string;
+    candidates: {
+      phoneNumber: string;
+      name: string;
+      admin: boolean;
+    }[];
     memberLimit?: number;
     memberIds: string[];
   }
-): Promise<CreatePartyReply> {
+) {
   const { id, name, createdAt, ...newParty } = await commitToDB(
     prisma.party.create({
       data: {
@@ -123,7 +127,7 @@ export async function createParty(
       ...newParty.candidates.map((candidate) => candidate.name),
       ...newParty.members.map(({ member }) => member.name),
     ],
-    createdAt: createdAt.toISOString(),
+    createdAt,
   };
 }
 
@@ -177,17 +181,13 @@ export async function deleteCandidate(
 
 export async function joinParty(
   reply: FastifyReply,
-  { userId, ...others }: JoinPartyBody & { admin: boolean }
-): Promise<Pick<JoinPartyReply, 'assignedAt'>> {
-  const { assignedAt } = await commitToDB(
+  { userId, ...others }: { userId: string; partyId: string; admin: boolean }
+) {
+  return await commitToDB(
     prisma.membersOnParties.create({
       data: { memberId: userId, ...others },
       select: { assignedAt: true },
     }),
     reply
   );
-
-  return {
-    assignedAt: assignedAt.toISOString(),
-  };
 }

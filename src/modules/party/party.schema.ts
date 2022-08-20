@@ -1,4 +1,4 @@
-import { Static, Type } from '@sinclair/typebox';
+import { Type } from '@sinclair/typebox';
 import {
   CandidateSchema,
   MembersOnPartiesSchema,
@@ -33,8 +33,6 @@ export const CreatePartySchema = {
 };
 
 export type CreatePartyTSchema = typeof CreatePartySchema;
-export type CreatePartyBody = Static<typeof CreatePartySchema.body>;
-export type CreatePartyReply = Static<typeof CreatePartySchema.response[201]>;
 
 export const JoinPartySchema = {
   body: Type.Object({
@@ -52,5 +50,3 @@ export const JoinPartySchema = {
 };
 
 export type JoinPartyTSchema = typeof JoinPartySchema;
-export type JoinPartyBody = Static<typeof JoinPartySchema.body>;
-export type JoinPartyReply = Static<typeof JoinPartySchema.response[200]>;
