@@ -1,20 +1,34 @@
 import { FastifyReply } from 'fastify';
 import prisma from '../../prisma';
 import { commitToDB } from '../../utils';
-import { CreatePartyBody, CreatePartyReply } from './party.schema';
+import {
+  CreatePartyBody,
+  CreatePartyReply,
+  JoinPartyBody,
+  JoinPartyReply,
+} from './party.schema';
 
-export async function getHostId(
+export async function getUser(
+  reply: FastifyReply,
+  { userId }: { userId: string }
+) {
+  return await commitToDB(
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { phoneNumber: true },
+    }),
+    reply
+  );
+}
+
+export async function getHost(
   reply: FastifyReply,
   { hostId }: { hostId: string }
 ) {
-  const host = await commitToDB(
+  return await commitToDB(
     prisma.user.findUnique({ where: { id: hostId }, select: { id: true } }),
     reply
   );
-
-  if (host == null) return reply.badRequest('Host id is not found') as never;
-
-  return host.id;
 }
 
 export async function getAdminAccounts(
@@ -25,6 +39,19 @@ export async function getAdminAccounts(
     prisma.user.findMany({
       where: { phoneNumber: { in: adminPhoneNumbers } },
       select: { id: true, phoneNumber: true },
+    }),
+    reply
+  );
+}
+
+export async function getParty(
+  reply: FastifyReply,
+  { partyId }: { partyId: string }
+) {
+  return await commitToDB(
+    prisma.party.findUnique({
+      where: { id: partyId },
+      select: { private: true, memberLimit: true },
     }),
     reply
   );
@@ -97,5 +124,70 @@ export async function createParty(
       ...newParty.members.map(({ member }) => member.name),
     ],
     createdAt: createdAt.toISOString(),
+  };
+}
+
+export async function countMember(
+  reply: FastifyReply,
+  { partyId }: { partyId: string }
+) {
+  return await commitToDB(
+    prisma.membersOnParties.count({ where: { partyId } }),
+    reply
+  );
+}
+
+export async function getMember(
+  reply: FastifyReply,
+  partyId_memberId: { partyId: string; memberId: string }
+) {
+  return await commitToDB(
+    prisma.membersOnParties.findUnique({
+      where: { partyId_memberId },
+      select: { admin: true, assignedAt: true },
+    }),
+    reply
+  );
+}
+
+export async function getCandidate(
+  reply: FastifyReply,
+  partyId_phoneNumber: { partyId: string; phoneNumber: string }
+) {
+  return await commitToDB(
+    prisma.candidate.findUnique({
+      where: { partyId_phoneNumber },
+      select: { admin: true },
+    }),
+    reply
+  );
+}
+
+export async function deleteCandidate(
+  reply: FastifyReply,
+  partyId_phoneNumber: { partyId: string; phoneNumber: string }
+) {
+  await commitToDB(
+    prisma.candidate.delete({
+      where: { partyId_phoneNumber },
+    }),
+    reply
+  );
+}
+
+export async function joinParty(
+  reply: FastifyReply,
+  { userId, ...others }: JoinPartyBody & { admin: boolean }
+): Promise<Pick<JoinPartyReply, 'assignedAt'>> {
+  const { assignedAt } = await commitToDB(
+    prisma.membersOnParties.create({
+      data: { memberId: userId, ...others },
+      select: { assignedAt: true },
+    }),
+    reply
+  );
+
+  return {
+    assignedAt: assignedAt.toISOString(),
   };
 }
