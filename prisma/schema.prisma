@@ -42,7 +42,7 @@ model MembersOnParties {
   member     User      @relation(fields: [memberId], references: [id], onDelete: Cascade)
   memberId   String
   admin      Boolean
-  pollVote   DateTime?
+  pollVote   DateTime? @db.Date
   assignedAt DateTime  @default(now())
 
   @@id([partyId, memberId])
