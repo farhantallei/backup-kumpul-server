@@ -27,7 +27,7 @@ export const LoginHandler: RouteHandlerTypebox<LoginTSchema> = async (
 
   const user = await getUser(reply, { phoneNumber });
 
-  if (user == null) return reply.badRequest('Phone number is not found');
+  if (user == null) return reply.notFound('Phone number is not found');
 
   // TODO: Implementing phone number verification
 
