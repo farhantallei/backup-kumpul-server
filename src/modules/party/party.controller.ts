@@ -74,7 +74,8 @@ export const JoinPartyHandler: RouteHandlerTypebox<JoinPartyTSchema> = async (
   request,
   reply
 ) => {
-  const { userId, partyId } = request.body;
+  const { userId } = request.body;
+  const { partyId } = request.params;
 
   const user = await getUser(reply, { userId });
   if (user == null) return reply.notFound('User id is not found');

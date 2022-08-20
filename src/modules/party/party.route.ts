@@ -7,7 +7,7 @@ const partyRoutes: FastifyPluginAsyncTypebox = async (route) => {
     schema: CreatePartySchema,
     handler: CreatePartyHandler,
   });
-  route.post('/join', {
+  route.post('/:partyId', {
     schema: JoinPartySchema,
     handler: JoinPartyHandler,
   });

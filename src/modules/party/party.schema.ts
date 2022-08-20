@@ -37,6 +37,8 @@ export type CreatePartyTSchema = typeof CreatePartySchema;
 export const JoinPartySchema = {
   body: Type.Object({
     userId: UserSchema.id,
+  }),
+  params: Type.Object({
     partyId: PartySchema.id,
   }),
   response: {
