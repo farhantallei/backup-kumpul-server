@@ -18,7 +18,7 @@ model Party {
   id          String             @id @default(cuid())
   name        String
   private     Boolean
-  memberLimit Int                @db.SmallInt
+  memberLimit Int?               @db.SmallInt
   pollChoice  DateTime[]         @db.Date
   pollEndsAt  DateTime?
   createdAt   DateTime           @default(now())

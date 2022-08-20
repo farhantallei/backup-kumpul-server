@@ -39,7 +39,7 @@ export async function createParty(
     pollChoice,
     ...party
   }: CreatePartyBody & {
-    memberLimit: number;
+    memberLimit?: number;
     memberIds: string[];
   }
 ): Promise<CreatePartyReply> {

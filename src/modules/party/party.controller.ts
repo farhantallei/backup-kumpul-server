@@ -6,7 +6,7 @@ import { createParty, getAdminAccounts, getHostId } from './party.service';
 export const CreatePartyHandler: RouteHandlerTypebox<
   CreatePartyTSchema
 > = async (request, reply) => {
-  const { hostId, memberLimit, candidates, ...others } = request.body;
+  const { hostId, candidates, ...others } = request.body;
 
   if (others.pollEndsAt) {
     if (new Date(others.pollEndsAt).getTime() <= new Date().getTime())
@@ -48,7 +48,6 @@ export const CreatePartyHandler: RouteHandlerTypebox<
 
   const newParty = await createParty(reply, {
     hostId: currHostId,
-    memberLimit: memberLimit || candidates.length + 1,
     candidates: candidatesFiltered,
     memberIds,
     ...others,
