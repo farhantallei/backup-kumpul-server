@@ -1,10 +1,18 @@
 import fastifySensible from '@fastify/sensible';
 import fastifySwagger from '@fastify/swagger';
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
+import ajvErrors from 'ajv-errors';
 import fastify from 'fastify';
 import { partyRoutes, userRoutes } from './modules/routes';
 
-const app = fastify().withTypeProvider<TypeBoxTypeProvider>();
+const app = fastify({
+  ajv: {
+    customOptions: {
+      allErrors: true,
+    },
+    plugins: [ajvErrors],
+  },
+}).withTypeProvider<TypeBoxTypeProvider>();
 
 export function addPlugins() {
   app.register(fastifySensible);
