@@ -19,11 +19,6 @@ export const CreatePartyHandler: RouteHandlerTypebox<
 > = async (request, reply) => {
   const { hostId, candidates, ...others } = request.body;
 
-  if (others.pollEndsAt) {
-    if (new Date(others.pollEndsAt).getTime() <= new Date().getTime())
-      return reply.badRequest(`body/pollEndsAt must be > ${new Date()}`);
-  }
-
   for (const date in others.pollChoice) {
     if (
       new Date(getDate(others.pollChoice[date])).getTime() <=
@@ -31,6 +26,13 @@ export const CreatePartyHandler: RouteHandlerTypebox<
     )
       return reply.badRequest(
         `body/pollChoice/${date} must be > ${new Date().toLocaleDateString()}`
+      );
+  }
+
+  if (others.pollEndsAt) {
+    if (new Date(others.pollEndsAt).getTime() <= new Date().getTime())
+      return reply.badRequest(
+        `body/pollEndsAt must be > ${new Date().toISOString()}`
       );
   }
 
