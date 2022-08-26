@@ -1,8 +1,20 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
-import { LoginHandler, RegisterHandler } from './user.controller';
-import { LoginSchema, RegisterSchema } from './user.schema';
+import {
+  LoginHandler,
+  RegisterHandler,
+  UserValidationHandler,
+} from './user.controller';
+import {
+  LoginSchema,
+  RegisterSchema,
+  UserValidationSchema,
+} from './user.schema';
 
 const userRoutes: FastifyPluginAsyncTypebox = async (route) => {
+  route.get('/:userId', {
+    schema: UserValidationSchema,
+    handler: UserValidationHandler,
+  });
   route.post('/register', {
     schema: RegisterSchema,
     handler: RegisterHandler,

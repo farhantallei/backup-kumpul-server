@@ -1,6 +1,14 @@
 import { Type } from '@sinclair/typebox';
 import { UserSchema } from '../../schemas';
 
+export const UserValidationSchema = {
+  params: Type.Object({
+    userId: UserSchema.id,
+  }),
+};
+
+export type UserValidationTSchema = typeof UserValidationSchema;
+
 export const RegisterSchema = {
   body: Type.Object({
     name: UserSchema.name,

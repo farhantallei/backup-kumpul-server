@@ -1,6 +1,22 @@
 import { RouteHandlerTypebox } from '../../types';
-import { LoginTSchema, RegisterTSchema } from './user.schema';
-import { createUser, getUser } from './user.service';
+import {
+  LoginTSchema,
+  RegisterTSchema,
+  UserValidationTSchema,
+} from './user.schema';
+import { createUser, getUser, getUserById } from './user.service';
+
+export const UserValidationHandler: RouteHandlerTypebox<
+  UserValidationTSchema
+> = async (request, reply) => {
+  const { userId } = request.params;
+
+  const user = await getUserById(reply, { id: userId });
+
+  if (user == null) return reply.unauthorized('Not authenticated');
+
+  return reply.code(204).send();
+};
 
 export const RegisterHandler: RouteHandlerTypebox<RegisterTSchema> = async (
   request,

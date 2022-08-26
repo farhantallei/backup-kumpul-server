@@ -12,6 +12,13 @@ export async function getUser(
   );
 }
 
+export async function getUserById(reply: FastifyReply, { id }: { id: string }) {
+  return await commitToDB(
+    prisma.user.findUnique({ where: { id }, select: null }),
+    reply
+  );
+}
+
 export async function createUser(
   reply: FastifyReply,
   {
